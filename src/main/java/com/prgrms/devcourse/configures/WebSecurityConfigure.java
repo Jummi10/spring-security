@@ -50,6 +50,11 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
                 .rememberMe()
                 .rememberMeParameter("remember-me")
                 .tokenValiditySeconds(300)  // 5분
+
+                .and()  // ChannelProcessingFilter
+                .requiresChannel()
+                .anyRequest().requiresSecure()  // 모든 요청은 https로 서비스해야한다(secure channel 요구)
+        // .antMatchers("/api/**").requiresSecure()
         ;
     }
 }
