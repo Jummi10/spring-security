@@ -9,6 +9,8 @@
 </head>
 <body>
 index page<br/>
-<span sec:authentication="name"></span> 님 반갑습니다!
+<span sec:authentication="name"></span> 님 반갑습니다! <!-- principal -->
+<br/>
+<span th:text="${#authentication.getAuthorities()}"></span> <!-- authorities, 사용자의 권한 목록 -->
 </body>
 </html>

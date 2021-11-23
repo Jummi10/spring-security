@@ -33,28 +33,42 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/me").hasAnyRole("USER", "ADMIN")    // 인증 영역 설정
                 .anyRequest().permitAll()   // 익명 영역
-
                 .and()
+
                 .formLogin()
                 .defaultSuccessUrl("/")
                 .permitAll()
-
                 .and()
+
+                /**
+                 * remeber me 설정
+                 */
+                .rememberMe()
+                .rememberMeParameter("remember-me")
+                .tokenValiditySeconds(300)  // 5분
+                .and()
+
+                /**
+                 * 로그아웃 설정
+                 */
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // default
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)    // default
                 .clearAuthentication(true)  // default
-
                 .and()
-                .rememberMe()
-                .rememberMeParameter("remember-me")
-                .tokenValiditySeconds(300)  // 5분
 
-                .and()  // ChannelProcessingFilter
+                /**
+                 * HTTP 요청을 HTTPS 요청으로 리다이렉트, ChannelProcessingFilter
+                 */
                 .requiresChannel()
                 .anyRequest().requiresSecure()  // 모든 요청은 https로 서비스해야한다(secure channel 요구)
         // .antMatchers("/api/**").requiresSecure()
+                /*.and()
+
+                .anonymous()
+                .principal("thisIsAnonymousUser")  // default: anonymousUser
+                .authorities("ROLE_ANONYMOUS", "ROLE_UNKNOWN")*/  // default: ROLE_ANONYMOUS
         ;
     }
 }
