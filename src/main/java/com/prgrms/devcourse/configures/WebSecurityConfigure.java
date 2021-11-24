@@ -49,6 +49,9 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
 
                 .formLogin()
                 .defaultSuccessUrl("/")
+                // .loginPage("/my-login") // custom login page
+                .usernameParameter("my-username")   // html page의 component name, default: username
+                .passwordParameter("my-password")   // default: password
                 .permitAll()
                 .and()
 
@@ -56,6 +59,7 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
                  * remeber me 설정
                  */
                 .rememberMe()
+                .key("my-remember-me")
                 .rememberMeParameter("remember-me")
                 .tokenValiditySeconds(300)  // 5분
                 .and()
@@ -82,6 +86,9 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
                 .principal("thisIsAnonymousUser")  // default: anonymousUser
                 .authorities("ROLE_ANONYMOUS", "ROLE_UNKNOWN")*/  // default: ROLE_ANONYMOUS
 
+                /**
+                 * 예외처리 핸들러
+                 */
                 .exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler())
         ;
