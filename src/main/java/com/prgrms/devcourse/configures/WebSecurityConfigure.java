@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.SecurityExpressionHandler;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -13,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -27,7 +30,9 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
         auth.inMemoryAuthentication()
                 .withUser("user").password("{noop}user123").roles("USER")
                 .and()
-                .withUser("admin").password("{noop}admin123").roles("ADMIN")
+                .withUser("admin01").password("{noop}admin123").roles("ADMIN")
+                .and()
+                .withUser("admin02").password("{noop}admin123").roles("ADMIN")
         ;
     }
 
@@ -43,8 +48,9 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/me").hasAnyRole("USER", "ADMIN")    // 인증 영역 설정
                 // isFullyAuthenticated(): rememberMe 통해서가 아닌 로그인 페이지에서 아이디, 패스워드를 입력해 인증된 사용자만 페이지에 접속 가능
-                .antMatchers("/admin").access("hasRole('ADMIN') and isFullyAuthenticated()")
+                .antMatchers("/admin").access("hasRole('ADMIN') and isFullyAuthenticated() and oddAdmin")
                 .anyRequest().permitAll()   // 익명 영역
+                .expressionHandler(securityExpressionHandler())
                 .and()
 
                 .formLogin()
@@ -111,5 +117,12 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
             httpServletResponse.getWriter().flush();
             httpServletResponse.getWriter().close();
         };
+    }
+
+    public SecurityExpressionHandler<FilterInvocation> securityExpressionHandler() {
+        return new CustomWebSecurityExpressionHandler(
+                new AuthenticationTrustResolverImpl(),
+                "ROLE_"
+        );
     }
 }
