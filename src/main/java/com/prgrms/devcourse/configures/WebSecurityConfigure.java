@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
@@ -86,6 +87,15 @@ public class WebSecurityConfigure extends WebSecurityConfigurerAdapter {
                 .requiresChannel()
                 .anyRequest().requiresSecure()  // 모든 요청은 https로 서비스해야한다(secure channel 요구)
                 // .antMatchers("/api/**").requiresSecure()
+                .and()
+
+                .sessionManagement()
+                .sessionFixation().changeSessionId()    // session fixation attack에 대한 전략 설정
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)   // session 생성 전략
+                .invalidSessionUrl("/") // 유효하지 않은 세션 감지시 이동시킬 url
+                .maximumSessions(1) // 최대 동시 로그인 가능한 session 개수
+                .maxSessionsPreventsLogin(false)    // maximum session에 도달했을 경우
+                .and()
                 .and()
 
                 /*.anonymous()
